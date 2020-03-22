@@ -1,0 +1,59 @@
+#! /usr/bin/make -f
+
+include /usr/share/dpkg/architecture.mk
+
+export DEB_BUILD_MAINT_OPTIONS=hardening=+all
+
+export DEB_LDFLAGS_MAINT_APPEND=-Wl,--as-needed \
+	-L$(CURDIR)/x265-8bit \
+	-L$(CURDIR)/x265-12bit
+# see #789111
+export DEB_LDFLAGS_MAINT_STRIP=-Wl,-Bsymbolic-functions
+# LFS support
+export DEB_CPPFLAGS_MAINT_APPEND=$(shell getconf LFS_CFLAGS)
+
+FLAGS  = -DENABLE_PIC=ON
+FLAGS += -DENABLE_ASSEMBLY=ON
+FLAGS += -DENABLE_SHARED=OFF
+FLAGS_CLI = -DENABLE_MKV=ON -DENABLE_LSMASH=ON -DENABLE_AVISYNTH=ON
+# currently fails to build
+# FLAGS += -DENABLE_DYNAMIC_HDR10=ON
+FLAGS_OTHERBIT  = -DENABLE_CLI=OFF
+FLAGS_OTHERBIT += -DEXPORT_C_API=OFF
+
+%:
+	dh $@ --buildsystem=cmake \
+		--sourcedirectory=source \
+		--builddirectory=x265-10bit
+
+override_dh_auto_clean:
+	dh_auto_clean --builddirectory=x265-8bit
+	dh_auto_clean --builddirectory=x265-12bit
+	dh_auto_clean
+
+# -arch bits
+
+override_dh_auto_configure-arch:
+	dh_auto_configure --builddirectory=x265-8bit -- \
+		$(FLAGS) $(FLAGS_OTHERBIT)
+	dh_auto_configure --builddirectory=x265-12bit -- \
+		$(FLAGS) $(FLAGS_OTHERBIT) -DMAIN12=ON -DHIGH_BIT_DEPTH=ON
+	dh_auto_configure -- \
+		$(FLAGS) $(FLAGS_CLI) -DHIGH_BIT_DEPTH=ON\
+		-DLIB_INSTALL_DIR=lib/$(DEB_HOST_MULTIARCH) \
+		-DEXTRA_LIB="x265_main.a;x265_main12.a" \
+		-DLINKED_8BIT=ON \
+		-DLINKED_12BIT=ON
+
+override_dh_auto_build-arch:
+	dh_auto_build --builddirectory=x265-8bit
+	dh_auto_build --builddirectory=x265-12bit
+	mv x265-8bit/libx265.a x265-8bit/libx265_main.a
+	mv x265-12bit/libx265.a x265-12bit/libx265_main12.a
+	dh_auto_build
+
+override_dh_auto_install-arch:
+	dh_auto_install
+	rm -r debian/x265-yuuki/usr/lib
+	rm -r debian/x265-yuuki/usr/include
+	mv debian/x265-yuuki/usr/bin/x265 debian/x265-yuuki/usr/bin/x265-yuuki

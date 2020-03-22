@@ -1,0 +1,41 @@
+Source: x265-yuuki
+Section: video
+Priority: optional
+Maintainer: Xinyue Lu <i@7086.in>
+Bugs: https://github.com/yuuki-deb/x265-yuuki/issues
+Homepage: https://github.com/msg7086/x265-Yuuki-Asuna
+Build-Depends:
+ debhelper-compat (= 12),
+ cmake,
+ libnuma-dev [amd64 arm64 i386 mips mips64 mips64el mipsel powerpc ppc64el],
+ nasm (>= 2.13) [amd64 kfreebsd-amd64],
+ avisynthplus-yuuki-dev,
+ liblsmash-yuuki-dev
+Standards-Version: 4.4.1
+
+Package: x265-yuuki
+Architecture: any
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends}
+Description: H.265/HEVC video stream encoder
+ x265 is a commandline encoder for creating H.265/High Efficiency Video Coding
+ (HEVC) video streams.
+ .
+ x265 supports the following features:
+  * full prediction and transform quad-tree recursion supported
+  * adaptive B-frame placement
+  * B-frames as references / arbitrary frame order
+  * CABAC (context-based adaptive binary arithmetic coding) entropy coding
+  * supports all Intra block types
+  * supports all Inter P partitions
+  * supports all Inter B partitions from 64x64 down to 8x4
+  * weighted prediction for P slices
+  * multiple reference frames
+  * scenecut detection
+  * parallel encoding on multiple CPUs
+ .
+ Additionally, x265-yuuki supports the following features:
+  * AviSynth+ input
+  * MP4 output from L-Smash
+  * GOP output
