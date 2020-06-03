@@ -1,4 +1,10 @@
-x265-yuuki (3.3.0+3+28-1) unstable; urgency=medium
+x265-yuuki (3.3.0+3+29) unstable; urgency=medium
+
+  * New upstream 3.3.0+3+29
+
+ -- Xinyue Lu <i@7086.in>  Tue, 21 Apr 2020 00:00:00 -0400
+
+x265-yuuki (3.3.0+3+28) unstable; urgency=medium
 
   * New upstream 3.3.0+3+28
 
