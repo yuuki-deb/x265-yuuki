@@ -5,9 +5,11 @@ reg='_(.*)\+'
 os_cache_date=$(date +%Y-%W)
 git_tag=${git_tag:-Asuna}
 rev=${rev:-1}
+git_commit=$(git ls-remote https://github.com/msg7086/x265-Yuuki-Asuna.git $git_tag | cut -f1)
 
 echo OS Cache: $os_cache_date
 echo Git Tag: $git_tag
+echo Git Commit: $git_commit
 echo Build Rev: $rev
 
 for distribution in $distributions; do
@@ -25,6 +27,7 @@ for distribution in $distributions; do
     --build-arg os=$distribution \
     --build-arg os_cache_date=$os_cache_date \
     --build-arg git_tag=$git_tag \
+    --build-arg git_commit=$git_commit \
     --build-arg rev=$rev \
     -f $dockerfile -t x265-asuna:$distribution .
 
